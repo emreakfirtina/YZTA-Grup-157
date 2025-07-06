@@ -2,7 +2,8 @@
 DiabetCare AI – Diyabet Yönetim Asistanı Projesi
 
 DiabetCare AI, diyabet hastalarının günlük kan şekeri takibi, beslenme ve fiziksel aktivite kayıtlarını kolayca yönetebilecekleri, aynı zamanda doktorların hastalarını uzaktan takip edip analiz edebilecekleri yapay zeka destekli bir dijital sağlık asistanıdır. Proje, kullanıcıların kan şekeri dalgalanmalarını tahmin eden modeller ve kişiselleştirilmiş beslenme önerileri gibi özelliklerle hastaların yaşam kalitesini artırmayı hedefler. Hasta ve doktor panelleri aracılığıyla veri girişinden raporlamaya kadar kapsamlı bir takip sistemi sunarken, eğitim modülü ile kullanıcıların diyabet hakkında bilinçlenmelerini destekler. Türkiye’de milyonlarca diyabet hastasının ihtiyaçlarına cevap verecek şekilde tasarlanmış bu proje, veri zenginliği ve sürdürülebilir takip avantajları ile sağlık alanında yapay zekanın etkin kullanımını göstermektedir.
-Sprint 1: Planlama ve Veri Hazırlığı
+
+**Sprint 1: Planlama ve Veri Hazırlığı**
 
 Sprint içinde tamamlanması tahmin edilen puan: 100 Puan
 
