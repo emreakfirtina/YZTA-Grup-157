@@ -13,10 +13,16 @@ Projenin toplamında 340 puanlık backlog tanımlanmıştır. Bu iş yükü 3 sp
 
 **Sprint Board**
 
+![Ekran Görüntüsü](images/sprintboard.png)
 
 
 **Daily Scrum:**
 Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
+
+![Ekran Görüntüsü](images/wp1.png)
+
+
+
 
 **Sprint süresince tamamlanan görevler:**
 
