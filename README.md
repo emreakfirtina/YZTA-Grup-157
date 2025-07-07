@@ -11,6 +11,10 @@ Sprint içinde tamamlanması tahmin edilen puan: 100 Puan
 
 Projenin toplamında 340 puanlık backlog tanımlanmıştır. Bu iş yükü 3 sprint'e eşit şekilde bölünmüş ve ilk sprint’in en azından 100 puanlık görevle başlaması gerektiğine karar verilmiştir. Bu sprintte, sonraki geliştirme sprintlerine temel oluşturacak planlama ve veri hazırlık süreçleri yer almaktadır.
 
+**Sprint Board**
+
+
+
 **Daily Scrum:**
 Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
 
