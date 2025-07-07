@@ -29,13 +29,17 @@ Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yap
 Veri seti araştırması ve seçimi:
 UCI ML Repository ve Kaggle platformlarında yer alan açık kaynaklı diyabet veri setleri araştırılmış, proje için en uygun veri seti belirlenmiştir.
 
-
 Kullanıcı hikayeleri yazımı:
 Sprint 1 içinde tamamlanması planlanmış fakat süre kısıtı nedeniyle Sprint 2’ye taşınmıştır.
 
+**Ürün Durumu**
+
+![Ekran Görüntüsü](images/image1.png)
+![Ekran Görüntüsü](images/image2.png)
+![Ekran Görüntüsü](images/korelasyon.png)
 
 **Sprint Review:**
-Sprint sonunda, temel planlama görevlerinin tamamlandığı ve projenin ilk versiyonunun geliştirme sürecine hazır hale geldiği değerlendirilmiştir. Eksik kalan görevler bir sonraki sprint'e aktarılmıştır.
+Sprint sonunda, proje kapsamında belirlenen temel planlama görevlerinin büyük bir kısmı başarıyla tamamlanmış ve geliştirici ekip, projenin ilk versiyonunun oluşturulmasına geçiş için gerekli altyapının hazır hale getirildiğini değerlendirmiştir. Süreç boyunca elde edilen çıktılar ve kullanıcı ihtiyaçlarına yönelik analizler doğrultusunda sprint hedeflerinin önemli bir bölümü gerçekleştirilmiş, tamamlanamayan görevler ise öncelik sırasına göre bir sonraki sprint'e aktarılmıştır. Bu aktarım sırasında, görevlerin kapsamı yeniden gözden geçirilmiş ve daha verimli bir planlama süreci için gerekli düzenlemeler yapılmıştır.
 
 
 
