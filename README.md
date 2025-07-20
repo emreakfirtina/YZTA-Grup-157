@@ -110,6 +110,8 @@ Sprint hedeflerinden biri olan chatbot asistan geliştirmesine başlanmıştır.
 
 **Ürün Durumu**
 
+![Ekran Görüntüsü](images/s2üründurumu.png)
+
 
 
 **Sprint Review**
