@@ -62,12 +62,18 @@ Projenin toplam 340 puanlık backlog’u, üç sprint’e dengeli şekilde böl�
 
 
 **Sprint Board**
-
+![Ekran Görüntüsü](images/images/sprint2board.png)
 
 
 
 **Daily Scrum:**
 Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
+
+![Ekran Görüntüs](images/images/s2ds1.png)
+![Ekran Görüntüs](images/images/s2ds2.png)
+![Ekran Görüntüs](images/images/s2ds3.png)
+![Ekran Görüntüs](images/images/s2ds4.png)
+
 
 
 
