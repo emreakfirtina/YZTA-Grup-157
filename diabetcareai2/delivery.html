@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Süt Teslimi Onaylandı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #253078 0%, #1a2357 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .success-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            background: linear-gradient(135deg, #6BBE45, #5aa83a);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px auto;
+            font-size: 40px;
+            animation: checkmark 0.8s ease-in-out 0.5s both;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #253078;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #6BBE45;
+        }
+
+        .info-card h3 {
+            color: #253078;
+            font-size: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-card p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Özel resim alanı */
+        .custom-image-container {
+            margin: 30px 0;
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-image {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+            transition: all 0.3s ease;
+        }
+
+        .custom-image:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
+        }
+
+        /* Resim yükleme alanı placeholder */
+        .image-placeholder {
+            width: 300px;
+            height: 200px;
+            border: 3px dashed #6BBE45;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6BBE45;
+            background: #f8ffff;
+            transition: all 0.3s ease;
+        }
+
+        .image-placeholder:hover {
+            border-color: #5aa83a;
+            background: #f0fff0;
+            transform: scale(1.02);
+        }
+
+        .image-placeholder i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .image-placeholder p {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .image-placeholder small {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .return-button {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #253078, #1a2357);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 48, 120, 0.3);
+        }
+
+        .return-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 48, 120, 0.4);
+            text-decoration: none;
+        }
+
+        .return-button i {
+            margin-right: 10px;
+        }
+
+        .timeline {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .timeline h3 {
+            color: #253078;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            width: 2px;
+            height: 25px;
+            background: #ddd;
+        }
+
+        .timeline-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #6BBE45;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Hareketli dekoratif elementler */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-milk {
+            position: absolute;
+            color: #6BBE45;
+            opacity: 0.1;
+            animation: floatMilk 6s ease-in-out infinite;
+        }
+
+        .floating-milk:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-milk:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .floating-milk:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 2s;
+        }
+
+        .floating-milk:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        @keyframes floatMilk {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+            66% {
+                transform: translateY(-8px) rotate(-3deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .main-title {
+                font-size: 26px;
+            }
+
+            .description {
+                font-size: 16px;
+            }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .custom-image, .image-placeholder {
+                max-width: 250px;
+                width: 90%;
+            }
+
+            .image-placeholder {
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 22px;
+            }
+
+            .return-button {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+
+            .custom-image, .image-placeholder {
+                max-width: 200px;
+            }
+
+            .image-placeholder {
+                height: 140px;
+            }
+
+            .image-placeholder i {
+                font-size: 36px;
+            }
+
+            .image-placeholder p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hareketli dekoratif elementler -->
+    <div class="floating-elements">
+        <i class="fa fa-glass floating-milk" style="font-size: 24px;"></i>
+        <i class="fa fa-heart floating-milk" style="font-size: 20px;"></i>
+        <i class="fa fa-star floating-milk" style="font-size: 18px;"></i>
+        <i class="fa fa-leaf floating-milk" style="font-size: 22px;"></i>
+    </div>
+
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fa fa-check"></i>
+        </div>
+        
+        <h1 class="main-title">Süt Teslim Talebiniz Başarıyla Alındı!</h1>
+        
+        <p class="description">
+            Sütünüz kalite kontrol sürecinden geçecek ve kuryemiz en kısa sürede teslim almak üzere 
+            sizinle iletişime geçecektir. Teşekkür ederiz!
+        </p>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h3><i class="fa fa-clock-o"></i> Bekleme Süresi</h3>
+                <p>Ortalama 30-60 dakika içinde kurye ataması yapılacaktır</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fa fa-phone"></i> İletişim</h3>
+                <p>Kurye atandıktan sonra telefon ile bilgilendirileceksiniz</p>
+            </div>
+            <div class="info-card">
+                <h3><i class="fa fa-shield"></i> Kalite Güvencesi</h3>
+                <p>Sütünüz profesyonel koşullarda muhafaza edilecektir</p>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <h3>Süreç Takibi</h3>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>Teslim talebi alındı</strong> - Sisteme kaydedildi
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>Yönetici onayı</strong> - Talep değerlendirilecek
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fa fa-truck"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>Kurye ataması</strong> - Size en yakın kurye görevlendirilecek
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">
+                    <i class="fa fa-home"></i>
+                </div>
+                <div class="timeline-content">
+                    <strong>Teslim alma</strong> - Kurye kapınıza gelecek
+                </div>
+            </div>
+        </div>
+
+        <!-- Özel resim alanı - Buraya kendi resminizi ekleyebilirsiniz -->
+        <div class="custom-image-container">
+            
+            
+            
+            <img src="img/delivery.png" alt="Özel Resim" class="custom-image">
+            
+        </div>
+
+        <a href="home.php" class="return-button">
+            <i class="fa fa-home"></i>
+            Ana Sayfaya Dön
+        </a>
+    </div>
+
+    <script>
+        // Resim yükleme fonksiyonu (isteğe bağlı)
+        function loadCustomImage(imagePath) {
+            const placeholder = document.querySelector('.image-placeholder');
+            const container = document.querySelector('.custom-image-container');
+            
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Özel Resim';
+            img.className = 'custom-image';
+            
+            img.onload = function() {
+                container.replaceChild(img, placeholder);
+            };
+            
+            img.onerror = function() {
+                console.log('Resim yüklenemedi:', imagePath);
+            };
+        }
+        
+        // Örnek kullanım:
+        // loadCustomImage('path/to/your/image.jpg');
+    </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Giriş Yap</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        color: #ffffff;
+        overflow-x: hidden;
+        line-height: 1.6;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .logo {
+        padding-top: 30px;
+        font-size: 2.5rem;
+        text-align: center;
+        font-weight: 700;
+        color: #00d4ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .para {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 2rem 0;
+        background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+    }
+
+    a {
+        border-radius: 24px;
+        display: inline-block;
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        padding: 1.5rem 3rem;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-weight: 600;
+        margin: 20px 20px;
+        color: #ffffff;
+        letter-spacing: 2px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    a:hover::before {
+        opacity: 1;
+    }
+
+    a:hover {
+        letter-spacing: 0px;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+    }
+
+    .doktor-btn {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    }
+
+    .doktor-btn:hover {
+        box-shadow: 0 20px 40px rgba(255, 107, 107, 0.3);
+    }
+
+    .log {
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .add {
+        margin: auto;
+        display: inline-block;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .floating-element {
+        position: absolute;
+        color: rgba(0, 212, 255, 0.1);
+        font-size: 2rem;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(180deg); }
+    }
+
+    .floating-element:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; color: rgba(0, 212, 255, 0.08); }
+    .floating-element:nth-child(2) { top: 60%; left: 85%; animation-delay: 2s; color: rgba(255, 107, 107, 0.08); }
+    .floating-element:nth-child(3) { top: 40%; left: 5%; animation-delay: 4s; color: rgba(78, 205, 196, 0.08); }
+    .floating-element:nth-child(4) { top: 80%; left: 75%; animation-delay: 1s; color: rgba(249, 202, 36, 0.08); }
+
+    @media only screen and (max-width: 768px) {
+        .logo {
+            font-size: 2rem;
+            padding: 50px 50px 20px 50px;
+        }
+        
+        .para {
+            font-size: 1.5rem;
+        }
+        
+        a {
+            font-size: 1rem;
+            padding: 1rem 2rem;
+            margin: 15px 10px;
+        }
+        
+        .log {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .add {
+            padding: 0 30px;
+        }
+    }
+
+    .fade-in {
+        opacity: 0;
+        animation: fadeInUp 1s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"><i class="fas fa-heartbeat"></i></div>
+        <div class="floating-element"><i class="fas fa-user-md"></i></div>
+        <div class="floating-element"><i class="fas fa-chart-line"></i></div>
+        <div class="floating-element"><i class="fas fa-brain"></i></div>
+    </div>
+
+    <p class="logo fade-in">
+        <i class="fas fa-heartbeat"></i>
+        Diabet<b style="color: #00d4ff;">Care AI</b>
+    </p>
+    
+    <p class="para fade-in">Giriş Yap</p>
+
+    <div class="log fade-in">
+        <a href="hasta_giris.php">
+            <i class="fas fa-user"></i>
+            Hasta
+        </a>
+        <a href="admin/doktor_giris.php" class="doktor-btn">
+            <i class="fas fa-user-md"></i>
+            Doktor
+        </a>
+    </div>
+
+    <div class="add">
+    </div>
+
+    <script>
+        // Animation delays for elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.2}s`;
+            });
+        });
+    </script>
+</body>
+</html>
