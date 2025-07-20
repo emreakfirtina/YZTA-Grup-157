@@ -16,7 +16,7 @@ Projenin toplamında 340 puanlık backlog tanımlanmıştır. Bu iş yükü 3 sp
 ![Ekran Görüntüsü](images/sprintboard.png)
 
 
-**Daily Scrum:**
+**Daily Scrum**
 Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
 
 ![Ekran Görüntüsü](images/wp1.png)
@@ -66,7 +66,8 @@ Projenin toplam 340 puanlık backlog’u, üç sprint’e dengeli şekilde böl�
 
 
 
-**Daily Scrum:**
+**Daily Scrum**
+
 Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
 
 ![Ekran Görüntüs](images/images/s2ds1.png)
@@ -111,7 +112,9 @@ Sprint hedeflerinden biri olan chatbot asistan geliştirmesine başlanmıştır.
 
 
 
-**Sprint Review:**
+**Sprint Review**
+
+
 Sprint 2 sonunda, projenin teknik ve görsel boyutlarını içeren önemli gelişmeler kaydedilmiştir. Bu sprint boyunca, yapay zekâ tabanlı diyabet tahmin sisteminin kullanıcılarla etkileşim kurabileceği web arayüzünün ilk çalışan versiyonu başarıyla geliştirilmiştir. Arayüz üzerinde, hem hasta hem de doktor rolleri için ayrı paneller oluşturulmuş; bu roller arasında geçişleri sağlayan kullanıcı senaryoları test edilip işler hâle getirilmiştir.
 
 Geliştirilen sayfalar arasında ana sayfa, giriş/kayıt ekranları, hasta ve doktor panelleri yer almakta olup; bu sayfalar işlevsel açıdan tamamlanmış, temel kullanıcı deneyimi dikkate alınarak sade ve erişilebilir bir yapı tasarlanmıştır. Bu süreçte ayrıca, demo veritabanı kayıtları ile sistem test edilmiş, kullanıcı girdilerinin veri işleme mantıkları sistemle entegre edilmiştir. Böylece sistemin hem ön yüz (frontend) hem de arka yüz (backend) açısından demo kullanım için hazır hale getirilmesi sağlanmıştır.
