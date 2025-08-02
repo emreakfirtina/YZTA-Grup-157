@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Sağlık Asistanı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar a:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a.active {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 70vh;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .chat-status {
+            color: #4ecdc4;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.8rem;
+            max-width: 80%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        }
+
+        .message-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.5rem;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.8rem;
+            max-width: 80%;
+        }
+
+        .typing-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .chat-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-action {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .quick-action:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        /* Appointment Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .close {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ff6b6b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+            
+            .chat-container {
+                height: 60vh;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            DiabetCare <span style="color: #00d4ff;">AI</span>
+        </div>
+        
+        <a href="home.php">
+            <i class="fas fa-home"></i>
+            Ana Sayfa
+        </a>
+        <a href="diyabet_tahmin.html">
+            <i class="fas fa-robot"></i>
+            Diyabet Tahmini
+        </a>
+        <a href="beslenme_modul.html">
+            <i class="fas fa-tint"></i>
+            Beslenme Kaydı
+        </a>
+        <a href="aktivite_modul.html">
+            <i class="fas fa-utensils"></i>
+            Aktivite Kaydı
+        </a>
+        <a href="chatbot.html" class="active">
+            <i class="fas fa-running"></i>
+            Chatbot
+        </a>
+        <a href="semptom_modul.html">
+            <i class="fas fa-brain"></i>
+            Semptom Analizi
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header fade-in">
+            <div class="welcome-section">
+                <h1>DiabetCare AI Asistanı</h1>
+                <p>Diyabet yönetimi hakkında her sorunuzda yanınızdayım</p>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container fade-in">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chat-info">
+                    <h3>DiabetCare Asistanı</h3>
+                    <div class="chat-status">
+                        <div class="status-dot"></div>
+                        Çevrimiçi
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action" onclick="sendQuickMessage('Diyabet nedir?')">
+                    <i class="fas fa-question-circle"></i> Diyabet Nedir?
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Beslenme önerisi ver')">
+                    <i class="fas fa-utensils"></i> Beslenme Önerisi
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Kan şekeri düşük ne yapmalıyım?')">
+                    <i class="fas fa-exclamation-triangle"></i> Acil Durum
+                </div>
+                <div class="quick-action" onclick="openAppointmentModal()">
+                    <i class="fas fa-calendar-plus"></i> Randevu Al
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        Merhaba! Ben DiabetCare AI asistanınızım. Diyabet yönetimi, beslenme, ilaç kullanımı ve genel sağlık konularında size yardımcı olabilirim. Ayrıca doktor randevusu almanızda da destek sağlayabilirim. Size nasıl yardımcı olabilirim?
+                        <div class="message-time" id="initialTime"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="typing-content">
+                    <span>Yazıyor</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Mesajınızı yazın..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-calendar-plus"></i>
+                    Randevu Talebi
+                </h2>
+                <span class="close" onclick="closeAppointmentModal()">&times;</span>
+            </div>
+            
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label for="patientName">Ad Soyad</label>
+                    <input type="text" id="patientName" name="patientName" placeholder="Adınızı ve soyadınızı girin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefon</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Telefon numaranızı girin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" name="email" placeholder="E-posta adresinizi girin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferredDate">Tercih Edilen Tarih</label>
+                    <input type="date" id="preferredDate" name="preferredDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferredTime">Tercih Edilen Saat</label>
+                    <select id="preferredTime" name="preferredTime" required>
+                        <option value="">Saat seçin</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="appointmentType">Randevu Türü</label>
+                    <select id="appointmentType" name="appointmentType" required>
+                        <option value="">Randevu türü seçin</option>
+                        <option value="routine">Rutin Kontrol</option>
+                        <option value="urgent">Acil Konsültasyon</option>
+                        <option value="nutrition">Beslenme Danışmanlığı</option>
+                        <option value="medication">İlaç Ayarlaması</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notlar (Opsiyonel)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Belirtmek istediğiniz özel durumlar..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAppointmentModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">Randevu Talep Et</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration - BURAYA YENİ API KEY'İNİZİ GİRİN
+        const GEMINI_API_KEY = 'AIzaSyDurJ3b0dpDgJJCLbQDcmMzv_ASpNc2yMg'; // Yeni API key'inizi buraya yapıştırın
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateInitialTime();
+            setMinDate();
+            
+            // Animation delays
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        function updateInitialTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            document.getElementById('initialTime').textContent = timeString;
+        }
+
+        function setMinDate() {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateString = tomorrow.toISOString().split('T')[0];
+            document.getElementById('preferredDate').min = dateString;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendQuickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+
+            // Check API key
+            if (GEMINI_API_KEY === 'YOUR_API_KEY_HERE') {
+                addMessage('bot', 'Lütfen API key\'inizi konfigüre edin. Detaylar için konsolu kontrol edin.');
+                console.error('Lütfen GEMINI_API_KEY değişkenini kendi API key\'inizle değiştirin.');
+                return;
+            }
+
+            // Add user message
+            addMessage('user', message);
+            messageInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                const response = await callGeminiAPI(message);
+                hideTypingIndicator();
+                addMessage('bot', response);
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('bot', 'Üzgünüm, şu anda bir teknik sorun yaşıyorum. Lütfen daha sonra tekrar deneyin.');
+                console.error('API Error:', error);
+            }
+        }
+
+        async function callGeminiAPI(userMessage) {
+            const systemPrompt = 'Sen DiabetCare AI adında bir diyabet yönetim asistanısın. Türkçe konuşuyorsun ve sadece diyabet, sağlık, beslenme, egzersiz ve genel tıbbi konularda yardım ediyorsun. ' +
+                'Özellikler: ' +
+                '- Diyabet hakkında bilgi ver ' +
+                '- Beslenme önerileri sun ' +
+                '- Kan şekeri yönetimi hakkında tavsiyelerde bulun ' +
+                '- Acil durumlarda doktora başvurmasını öner ' +
+                '- İlaç konularında genel bilgi ver ama kesin reçete yazma ' +
+                '- Empati göster ve destekleyici ol ' +
+                '- Kısa ve anlaşılır cevaplar ver ' +
+                'ÖNEMLI: Tıbbi acil durumlar için mutlaka doktora başvurmasını söyle. Kesin tanı koyma.';
+
+            const requestBody = {
+                contents: [{
+                    parts: [{
+                        text: systemPrompt + '\n\nKullanıcı sorusu: ' + userMessage
+                    }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024,
+                }
+            };
+
+            try {
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (!response.ok) {
+                    console.error('API Response Status:', response.status);
+                    console.error('API Response:', await response.text());
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+
+                const data = await response.json();
+                console.log('API Response Data:', data);
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    console.error('Unexpected API response format:', data);
+                    throw new Error('Unexpected API response format');
+                }
+            } catch (error) {
+                console.error('Detailed API Error:', error);
+                throw error;
+            }
+        }
+
+        function addMessage(sender, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + sender;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const avatarIcon = sender === 'user' ? 'fas fa-user' : 'fas fa-robot';
+            
+            // Create avatar div
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            const avatarIcon2 = document.createElement('i');
+            avatarIcon2.className = avatarIcon;
+            avatarDiv.appendChild(avatarIcon2);
+            
+            // Create content div
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = message + '<div class="message-time">' + timeString + '</div>';
+            
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'flex';
+            document.getElementById('sendBtn').disabled = true;
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+            document.getElementById('sendBtn').disabled = false;
+        }
+
+        // Appointment Modal Functions
+        function openAppointmentModal() {
+            document.getElementById('appointmentModal').style.display = 'block';
+        }
+
+        function closeAppointmentModal() {
+            document.getElementById('appointmentModal').style.display = 'none';
+            document.getElementById('appointmentForm').reset();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('appointmentModal');
+            if (event.target === modal) {
+                closeAppointmentModal();
+            }
+        }
+
+        // Appointment form submission
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const appointmentData = {
+                patientName: formData.get('patientName'),
+                phone: formData.get('phone'),
+                email: formData.get('email'),
+                preferredDate: formData.get('preferredDate'),
+                preferredTime: formData.get('preferredTime'),
+                appointmentType: formData.get('appointmentType'),
+                notes: formData.get('notes')
+            };
+            
+            // Simulate appointment booking
+            setTimeout(function() {
+                closeAppointmentModal();
+                const appointmentMessage = 'Randevu talebiniz başarıyla alındı! \n\n' +
+                    '📅 Tarih: ' + formatDate(appointmentData.preferredDate) + '\n' +
+                    '🕐 Saat: ' + appointmentData.preferredTime + '\n' +
+                    '👨‍⚕️ Tür: ' + getAppointmentTypeName(appointmentData.appointmentType) + '\n\n' +
+                    'Randevunuz onaylandığında ' + appointmentData.phone + ' numaralı telefonunuza SMS ile bilgilendirme yapılacaktır. Sağlık ekibimiz en kısa sürede sizinle iletişime geçecektir.';
+                
+                addMessage('bot', appointmentMessage.replace(/\n/g, '<br>'));
+            }, 1000);
+        });
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('tr-TR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function getAppointmentTypeName(type) {
+            const types = {
+                'routine': 'Rutin Kontrol',
+                'urgent': 'Acil Konsültasyon',
+                'nutrition': 'Beslenme Danışmanlığı',
+                'medication': 'İlaç Ayarlaması'
+            };
+            return types[type] || type;
+        }
+    </script>
+</body>
+</html>

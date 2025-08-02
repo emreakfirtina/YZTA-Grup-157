@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Fiziksel Aktivite Modülü</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar a:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a.active {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-container:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 0.8rem;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .activity-recommendation {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-level {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommendation-desc {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #0099cc);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .activity-suggestions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .suggestion-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(10px);
+        }
+
+        .suggestion-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .suggestion-content {
+            flex: 1;
+        }
+
+        .suggestion-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .suggestion-desc {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Status Colors */
+        .status-low { color: #4ecdc4; }
+        .status-moderate { color: #f9ca24; }
+        .status-high { color: #ff6b6b; }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .alert-error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            DiabetCare <span style="color: #00d4ff;">AI</span>
+        </div>
+        
+        <a href="home.php">
+            <i class="fas fa-home"></i>
+            Ana Sayfa
+        </a>
+        <a href="diyabet_tahmin.html">
+            <i class="fas fa-tint"></i>
+            Diyabet Tahmini
+        </a>
+        <a href="beslenme_modul.html">
+            <i class="fas fa-utensils"></i>
+            Beslenme Kaydı
+        </a>
+        <a href="aktivite_modul.html" class="active">
+            <i class="fas fa-running"></i>
+            Aktivite Kaydı
+        </a>
+        <a href="chatbot.html">
+            <i class="fas fa-brain"></i>
+            Chatbot
+        </a>
+        <a href="semptom_modul.html">
+            <i class="fas fa-chart-line"></i>
+            Semptom Analizi
+        </a>
+       
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header fade-in">
+            <div class="welcome-section">
+                <h1><i class="fas fa-running"></i> Fiziksel Aktivite Modülü</h1>
+                <p>AI destekli kişiselleştirilmiş aktivite önerileri alın</p>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i> İşlem başarıyla tamamlandı!
+        </div>
+        
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-triangle"></i> <span id="errorMessage">Bir hata oluştu!</span>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container fade-in">
+            <h2 style="margin-bottom: 1.5rem; color: #00d4ff;">
+                <i class="fas fa-user-check"></i> Kişisel Bilgileriniz
+            </h2>
+            
+            <form id="activityForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="age">
+                            <i class="fas fa-birthday-cake"></i>
+                            Yaş
+                        </label>
+                        <input type="number" id="age" name="age" min="18" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gender">
+                            <i class="fas fa-venus-mars"></i>
+                            Cinsiyet
+                        </label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Seçiniz</option>
+                            <option value="0">Kadın</option>
+                            <option value="1">Erkek</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weight">
+                            <i class="fas fa-weight"></i>
+                            Kilo (kg)
+                        </label>
+                        <input type="number" id="weight" name="weight" min="30" max="200" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="height">
+                            <i class="fas fa-ruler-vertical"></i>
+                            Boy (cm)
+                        </label>
+                        <input type="number" id="height" name="height" min="100" max="250" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="glucose_level">
+                            <i class="fas fa-tint"></i>
+                            Son Kan Şekeri (mg/dL)
+                        </label>
+                        <input type="number" id="glucose_level" name="glucose_level" min="50" max="400" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blood_pressure">
+                            <i class="fas fa-heartbeat"></i>
+                            Kan Basıncı Sistolik
+                        </label>
+                        <input type="number" id="blood_pressure" name="blood_pressure" min="80" max="250" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="current_activity">
+                            <i class="fas fa-running"></i>
+                            Mevcut Aktivite Seviyeniz
+                        </label>
+                        <select id="current_activity" name="current_activity" required>
+                            <option value="">Seçiniz</option>
+                            <option value="0">Düşük (Sedanter yaşam)</option>
+                            <option value="1">Orta (Haftada 2-3 gün)</option>
+                            <option value="2">Yüksek (Düzenli aktif)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heart_rate">
+                            <i class="fas fa-heart"></i>
+                            Dinlenme Kalp Hızı
+                        </label>
+                        <input type="number" id="heart_rate" name="heart_rate" min="40" max="120" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="daily_steps">
+                            <i class="fas fa-walking"></i>
+                            Günlük Ortalama Adım
+                        </label>
+                        <input type="number" id="daily_steps" name="daily_steps" min="500" max="20000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="exercise_frequency">
+                            <i class="fas fa-calendar-week"></i>
+                            Haftalık Egzersiz Günü
+                        </label>
+                        <select id="exercise_frequency" name="exercise_frequency" required>
+                            <option value="">Seçiniz</option>
+                            <option value="0">Hiç</option>
+                            <option value="1">1 gün</option>
+                            <option value="2">2 gün</option>
+                            <option value="3">3 gün</option>
+                            <option value="4">4 gün</option>
+                            <option value="5">5 gün</option>
+                            <option value="6">6 gün</option>
+                            <option value="7">Her gün</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="has_diabetes">
+                            <i class="fas fa-stethoscope"></i>
+                            Diyabet Durumu
+                        </label>
+                        <select id="has_diabetes" name="has_diabetes" required>
+                            <option value="">Seçiniz</option>
+                            <option value="0">Diyabetim yok</option>
+                            <option value="1">Diyabetim var</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pregnancies">
+                            <i class="fas fa-baby"></i>
+                            Hamilelik Sayısı (Kadınlar için)
+                        </label>
+                        <input type="number" id="pregnancies" name="pregnancies" min="0" max="15" value="0">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-brain"></i>
+                    AI Aktivite Önerisi Al
+                </button>
+            </form>
+        </div>
+
+        <!-- Loading Animation -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI modeliniz analiz ediyor...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <div class="results-grid">
+                <!-- Activity Recommendation -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <i class="fas fa-target"></i>
+                        Önerilen Aktivite Seviyesi
+                    </div>
+                    
+                    <div class="activity-recommendation" id="recommendationCard">
+                        <div class="recommendation-level" id="activityLevel">-</div>
+                        <div class="recommendation-desc" id="activityDesc">-</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                            Güven Oranı: <span id="confidenceText">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Suggestions -->
+                <div class="result-card">
+                    <div class="result-title">
+                        <i class="fas fa-list-check"></i>
+                        Önerilen Aktiviteler
+                    </div>
+                    
+                    <div class="activity-suggestions" id="suggestionsContainer">
+                        <!-- Suggestions will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="result-card fade-in">
+                <div class="result-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Detaylı Analiz
+                </div>
+                <div id="detailedAnalysis">
+                    <!-- Analysis content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission handler
+        document.getElementById('activityForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const loading = document.getElementById('loading');
+            const resultsSection = document.getElementById('resultsSection');
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            
+            // Hide previous results and alerts
+            resultsSection.style.display = 'none';
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            // Show loading
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            
+            // Collect form data
+            const formData = new FormData(this);
+            
+            // Calculate BMI
+            const weight = parseFloat(formData.get('weight'));
+            const height = parseFloat(formData.get('height')) / 100; // Convert to meters
+            const bmi = weight / (height * height);
+            
+            // Prepare data for API
+            const apiData = {
+                age: parseInt(formData.get('age')),
+                gender: parseInt(formData.get('gender')),
+                bmi: bmi,
+                glucose_level: parseFloat(formData.get('glucose_level')),
+                blood_pressure: parseFloat(formData.get('blood_pressure')),
+                insulin: 80, // Default value
+                diabetes_pedigree: 0.5, // Default value
+                pregnancies: parseInt(formData.get('pregnancies')),
+                current_activity_level: parseInt(formData.get('current_activity')),
+                heart_rate_resting: parseFloat(formData.get('heart_rate')),
+                daily_steps: parseFloat(formData.get('daily_steps')),
+                exercise_frequency: parseInt(formData.get('exercise_frequency')),
+                has_diabetes: parseInt(formData.get('has_diabetes'))
+            };
+            
+            try {
+                // Send request to PHP API
+                const response = await fetch('backend/aktivite_predict.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(apiData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result.data);
+                    successAlert.style.display = 'block';
+                    resultsSection.style.display = 'block';
+                    
+                    // Scroll to results
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    throw new Error(result.message || 'Tahmin yapılırken hata oluştu');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').textContent = error.message;
+                errorAlert.style.display = 'block';
+            } finally {
+                // Hide loading
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Display results function
+        function displayResults(data) {
+            const activityLevels = ['Düşük Yoğunluk', 'Orta Yoğunluk', 'Yüksek Yoğunluk'];
+            const statusClasses = ['status-low', 'status-moderate', 'status-high'];
+            
+            // Update recommendation card
+            document.getElementById('activityLevel').textContent = data.recommended_activity;
+            document.getElementById('activityLevel').className = 'recommendation-level ' + statusClasses[data.recommended_level];
+            
+            const descriptions = [
+                'Hafif egzersizler ve günlük aktiviteler öncelenmelidir.',
+                'Orta yoğunlukta düzenli egzersizler yapabilirsiniz.',
+                'Yüksek yoğunlukta spor aktivitelerine katılabilirsiniz.'
+            ];
+            
+            document.getElementById('activityDesc').textContent = descriptions[data.recommended_level];
+            
+            // Update confidence
+            const confidence = Math.round(data.confidence * 100);
+            document.getElementById('confidenceFill').style.width = confidence + '%';
+            document.getElementById('confidenceText').textContent = confidence + '%';
+            
+            // Generate activity suggestions
+            generateActivitySuggestions(data.recommended_level);
+            
+            // Generate detailed analysis
+            generateDetailedAnalysis(data);
+        }
+        
+        // Generate activity suggestions based on level
+        function generateActivitySuggestions(level) {
+            const suggestions = {
+                0: [ // Düşük Yoğunluk
+                    { icon: 'walking', title: 'Günlük Yürüyüş', desc: '15-30 dakika hafif tempoda yürüyüş' },
+                    { icon: 'swimmer', title: 'Su Egzersizleri', desc: 'Havuzda hafif aerobik hareketler' },
+                    { icon: 'leaf', title: 'Bahçıvanlık', desc: 'Hafif bahçe işleri ve bitki bakımı' },
+                    { icon: 'dumbbell', title: 'Hafif Germe', desc: 'Yoga ve esneklik egzersizleri' }
+                ],
+                1: [ // Orta Yoğunluk
+                    { icon: 'walking', title: 'Hızlı Yürüyüş', desc: '30-45 dakika hızlı tempoda yürüyüş' },
+                    { icon: 'bicycle', title: 'Bisiklet Sürme', desc: 'Düz yolda 45-60 dakika bisiklet' },
+                    { icon: 'swimmer', title: 'Yüzme', desc: 'Havuzda 30-40 dakika yüzme' },
+                    { icon: 'dumbbell', title: 'Ağırlık Antrenmanı', desc: 'Hafif ağırlıklarla güçlendirme' }
+                ],
+                2: [ // Yüksek Yoğunluk
+                    { icon: 'running', title: 'Koşu', desc: '30-60 dakika koşu veya jogging' },
+                    { icon: 'dumbbell', title: 'Ağır Antrenman', desc: 'Yoğun ağırlık antrenmanı' },
+                    { icon: 'volleyball-ball', title: 'Takım Sporları', desc: 'Futbol, basketbol, voleybol' },
+                    { icon: 'mountain', title: 'Dağcılık', desc: 'Trekking ve dağ yürüyüşü' }
+                ]
+            };
+            
+            const container = document.getElementById('suggestionsContainer');
+            container.innerHTML = '';
+            
+            suggestions[level].forEach(suggestion => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.className = 'suggestion-item';
+                suggestionElement.innerHTML = `
+                    <div class="suggestion-icon">
+                        <i class="fas fa-${suggestion.icon}"></i>
+                    </div>
+                    <div class="suggestion-content">
+                        <div class="suggestion-title">${suggestion.title}</div>
+                        <div class="suggestion-desc">${suggestion.desc}</div>
+                    </div>
+                `;
+                container.appendChild(suggestionElement);
+            });
+        }
+        
+        // Generate detailed analysis
+        function generateDetailedAnalysis(data) {
+            const container = document.getElementById('detailedAnalysis');
+            
+            const analysisHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-bullseye" style="font-size: 2rem; color: #00d4ff; margin-bottom: 0.5rem;"></i>
+                        <div style="font-size: 1.5rem; font-weight: 600;">${data.recommended_activity}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Önerilen Seviye</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; text-align: center;">
+                        <i class="fas fa-percentage" style="font-size: 2rem; color: #4ecdc4; margin-bottom: 0.5rem;"></i>
+                        <div style="font-size: 1.5rem; font-weight: 600;">${Math.round(data.confidence * 100)}%</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Güven Oranı</div>
+                    </div>
+                </div>
+                
+                <h4 style="color: #00d4ff; margin-bottom: 1rem;">
+                    <i class="fas fa-lightbulb"></i> Kişiselleştirilmiş Öneriler
+                </h4>
+                
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+                    <h5 style="color: #f9ca24; margin-bottom: 0.5rem;">⚠️ Dikkat Edilmesi Gerekenler:</h5>
+                    <ul style="margin-left: 1rem; color: rgba(255,255,255,0.8);">
+                        <li>Egzersiz öncesi ve sonrası kan şekerinizi ölçün</li>
+                        <li>Yanınızda hızlı etkili karbonhidrat bulundurun</li>
+                        <li>Aşırı yorulduğunuzda dinlenin</li>
+                        <li>Düzenli hidrasyon sağlayın</li>
+                    </ul>
+                </div>
+                
+                <div style="background: rgba(78, 205, 196, 0.1); padding: 1rem; border-radius: 10px; border-left: 4px solid #4ecdc4;">
+                    <h5 style="color: #4ecdc4; margin-bottom: 0.5rem;">💡 Pro İpucu:</h5>
+                    <p style="color: rgba(255,255,255,0.8); margin: 0;">
+                        Egzersiz zamanlamanız çok önemli! Yemekten 1-2 saat sonra aktivite yapmanız 
+                        kan şekerinizi daha iyi dengelemeye yardımcı olur.
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = analysisHTML;
+        }
+        
+        // Gender change handler for pregnancy field
+        document.getElementById('gender').addEventListener('change', function() {
+            const pregnancyField = document.getElementById('pregnancies');
+            if (this.value === '1') { // Male
+                pregnancyField.value = '0';
+                pregnancyField.disabled = true;
+                pregnancyField.parentElement.style.opacity = '0.5';
+            } else {
+                pregnancyField.disabled = false;
+                pregnancyField.parentElement.style.opacity = '1';
+            }
+        });
+        
+        // Auto-calculate BMI and show it
+        function updateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+            
+            if (weight && height) {
+                const bmi = weight / Math.pow(height / 100, 2);
+                const bmiText = `BMI: ${bmi.toFixed(1)}`;
+                
+                // Add BMI display if it doesn't exist
+                let bmiDisplay = document.getElementById('bmiDisplay');
+                if (!bmiDisplay) {
+                    bmiDisplay = document.createElement('div');
+                    bmiDisplay.id = 'bmiDisplay';
+                    bmiDisplay.style.cssText = `
+                        color: #00d4ff;
+                        font-size: 0.9rem;
+                        margin-top: 0.5rem;
+                        font-weight: 600;
+                    `;
+                    document.getElementById('height').parentElement.appendChild(bmiDisplay);
+                }
+                
+                bmiDisplay.textContent = bmiText;
+                
+                // Add BMI category
+                let category = '';
+                if (bmi < 18.5) category = '(Zayıf)';
+                else if (bmi < 25) category = '(Normal)';
+                else if (bmi < 30) category = '(Fazla Kilolu)';
+                else category = '(Obez)';
+                
+                bmiDisplay.textContent = `${bmiText} ${category}`;
+            }
+        }
+        
+        document.getElementById('weight').addEventListener('input', updateBMI);
+        document.getElementById('height').addEventListener('input', updateBMI);
+        
+        // Form validation
+        function validateForm() {
+            const form = document.getElementById('activityForm');
+            const inputs = form.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    input.style.borderColor = '#ff6b6b';
+                    isValid = false;
+                } else {
+                    input.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }
+            });
+            
+            return isValid;
+        }
+        
+        // Add input event listeners for real-time validation
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('input', function() {
+                if (this.value) {
+                    this.style.borderColor = '#4ecdc4';
+                } else {
+                    this.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                }
+            });
+        });
+        
+        // Animation delays
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // Demo data button (for testing)
+        function fillDemoData() {
+            document.getElementById('age').value = '45';
+            document.getElementById('gender').value = '0';
+            document.getElementById('weight').value = '70';
+            document.getElementById('height').value = '165';
+            document.getElementById('glucose_level').value = '140';
+            document.getElementById('blood_pressure').value = '130';
+            document.getElementById('current_activity').value = '1';
+            document.getElementById('heart_rate').value = '75';
+            document.getElementById('daily_steps').value = '5000';
+            document.getElementById('exercise_frequency').value = '3';
+            document.getElementById('has_diabetes').value = '0';
+            document.getElementById('pregnancies').value = '2';
+            
+            updateBMI();
+        }
+        
+        // Add demo button to header
+        
+        demoButton.addEventListener('click', fillDemoData);
+        demoButton.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 5px 15px rgba(249, 202, 36, 0.3)';
+        });
+        demoButton.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+        
+        document.querySelector('.welcome-section').appendChild(demoButton);
+    </script>
+</body>
+</html>

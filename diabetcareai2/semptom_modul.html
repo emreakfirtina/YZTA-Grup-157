@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Semptom Bildirimi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar a:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a.active {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* Semptom Form Container */
+        .symptom-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Semptom Checklist */
+        .symptom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .symptom-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .symptom-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .symptom-item.selected {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .symptom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .symptom-checkbox:checked {
+            background: #00d4ff;
+            border-color: #00d4ff;
+        }
+
+        .symptom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .symptom-label {
+            font-size: 0.95rem;
+            color: #fff;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Severity Scale */
+        .severity-scale {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .severity-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .severity-option:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .severity-option.selected {
+            background: #00d4ff;
+            border-color: #00d4ff;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1.2rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .risk-indicator {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .risk-score {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .risk-level {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .risk-low { color: #4ecdc4; }
+        .risk-medium { color: #f9ca24; }
+        .risk-high { color: #ff6b6b; }
+
+        .recommendations {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            background: #00d4ff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .symptom-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .severity-scale {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            DiabetCare <span style="color: #00d4ff;">AI</span>
+        </div>
+        
+        <a href="home.php">
+            <i class="fas fa-home"></i>
+            Ana Sayfa
+        </a>
+        <a href="diyabet_tahmin.html">
+            <i class="fas fa-tint"></i>
+            Diyabet Tahmini
+        </a>
+        <a href="beslenme_modul.html">
+            <i class="fas fa-utensils"></i>
+            Beslenme Kaydı
+        </a>
+        <a href="aktivite_modul.html">
+            <i class="fas fa-stethoscope"></i>
+            Aktivite Kaydı
+        </a>
+        <a href="chatbot.html">
+            <i class="fas fa-running"></i>
+            Chatbot 
+        </a>
+        <a href="semptom_modul.html" class="active">
+            <i class="fas fa-chart-line"></i>
+            Semptom Analizi
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header fade-in">
+            <div class="page-title">
+                <h1>Semptom Bildirimi</h1>
+                <p>AI destekli semptom analizi ve risk değerlendirmesi</p>
+            </div>
+        </div>
+
+        <div class="symptom-container">
+            <!-- Kişisel Bilgiler -->
+            <div class="form-card fade-in">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="card-title">Kişisel Bilgiler</div>
+                </div>
+
+                <form id="symptomForm">
+                    <div class="form-group">
+                        <label class="form-label">Yaş</label>
+                        <input type="number" class="form-input" id="age" placeholder="Yaşınızı giriniz" min="18" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Vücut Kitle İndeksi (BMI)</label>
+                        <input type="number" class="form-input" id="bmi" placeholder="BMI değerinizi giriniz (örn: 25.5)" step="0.1" min="15" max="50" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Son Kan Şekeri Değeri (mg/dL)</label>
+                        <input type="number" class="form-input" id="glucose" placeholder="Son kan şekeri ölçümünüz (örn: 120)" min="50" max="400" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Kan Basıncı (Sistolik)</label>
+                        <input type="number" class="form-input" id="bloodPressure" placeholder="Üst kan basınç değeri (örn: 120)" min="80" max="200" required>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Semptomlar -->
+            <div class="form-card fade-in">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div class="card-title">Yaşadığınız Semptomları İşaretleyin</div>
+                </div>
+
+                <div class="symptom-grid">
+                    <div class="symptom-item" data-symptom="thirst">
+                        <input type="checkbox" class="symptom-checkbox" id="thirst">
+                        <label class="symptom-label" for="thirst">Aşırı susuzluk</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="urination">
+                        <input type="checkbox" class="symptom-checkbox" id="urination">
+                        <label class="symptom-label" for="urination">Sık idrara çıkma</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="fatigue">
+                        <input type="checkbox" class="symptom-checkbox" id="fatigue">
+                        <label class="symptom-label" for="fatigue">Aşırı yorgunluk</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="blurred-vision">
+                        <input type="checkbox" class="symptom-checkbox" id="blurred-vision">
+                        <label class="symptom-label" for="blurred-vision">Bulanık görme</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="weight-loss">
+                        <input type="checkbox" class="symptom-checkbox" id="weight-loss">
+                        <label class="symptom-label" for="weight-loss">Ani kilo kaybı</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="hunger">
+                        <input type="checkbox" class="symptom-checkbox" id="hunger">
+                        <label class="symptom-label" for="hunger">Aşırı açlık hissi</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="dry-mouth">
+                        <input type="checkbox" class="symptom-checkbox" id="dry-mouth">
+                        <label class="symptom-label" for="dry-mouth">Ağız kuruluğu</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="slow-healing">
+                        <input type="checkbox" class="symptom-checkbox" id="slow-healing">
+                        <label class="symptom-label" for="slow-healing">Yavaş iyileşen yaralar</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="tingling">
+                        <input type="checkbox" class="symptom-checkbox" id="tingling">
+                        <label class="symptom-label" for="tingling">El/ayak uyuşması</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="skin-problems">
+                        <input type="checkbox" class="symptom-checkbox" id="skin-problems">
+                        <label class="symptom-label" for="skin-problems">Cilt problemleri</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="nausea">
+                        <input type="checkbox" class="symptom-checkbox" id="nausea">
+                        <label class="symptom-label" for="nausea">Mide bulantısı</label>
+                    </div>
+
+                    <div class="symptom-item" data-symptom="headache">
+                        <input type="checkbox" class="symptom-checkbox" id="headache">
+                        <label class="symptom-label" for="headache">Baş ağrısı</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Semptom Şiddeti</label>
+                    <div class="severity-scale">
+                        <div class="severity-option" data-severity="1">Hafif</div>
+                        <div class="severity-option" data-severity="2">Orta</div>
+                        <div class="severity-option" data-severity="3">Şiddetli</div>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" id="analyzeBtn">
+                    <i class="fas fa-brain"></i>
+                    AI ile Analiz Et
+                </button>
+            </div>
+
+            <!-- Sonuçlar -->
+            <div class="results-section" id="resultsSection">
+                <div class="risk-indicator">
+                    <div class="risk-score" id="riskScore">85%</div>
+                    <div class="risk-level" id="riskLevel">Orta Risk</div>
+                    <div id="riskDescription">Semptomlarınız dikkat gerektirir</div>
+                </div>
+
+                <div class="recommendations">
+                    <h3 style="margin-bottom: 1rem; color: #00d4ff;">
+                        <i class="fas fa-lightbulb"></i>
+                        AI Önerileri
+                    </h3>
+                    <div id="recommendationsList">
+                        <!-- Öneriler buraya gelecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form elementi ve değişkenler
+        const symptomForm = document.getElementById('symptomForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        
+        let selectedSymptoms = [];
+        let selectedSeverity = 1;
+
+        // Semptom seçimi
+        document.querySelectorAll('.symptom-item').forEach(item => {
+            const checkbox = item.querySelector('.symptom-checkbox');
+            
+            item.addEventListener('click', () => {
+                checkbox.checked = !checkbox.checked;
+                item.classList.toggle('selected', checkbox.checked);
+                
+                const symptom = item.dataset.symptom;
+                if (checkbox.checked) {
+                    if (!selectedSymptoms.includes(symptom)) {
+                        selectedSymptoms.push(symptom);
+                    }
+                } else {
+                    selectedSymptoms = selectedSymptoms.filter(s => s !== symptom);
+                }
+            });
+        });
+
+        // Şiddet seçimi
+        document.querySelectorAll('.severity-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.severity-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+                selectedSeverity = parseInt(option.dataset.severity);
+            });
+        });
+
+        // Varsayılan şiddet seçimi
+        document.querySelector('.severity-option[data-severity="1"]').classList.add('selected');
+
+        // Analiz butonu
+        analyzeBtn.addEventListener('click', async () => {
+            // Form validasyonu
+            const age = document.getElementById('age').value;
+            const bmi = document.getElementById('bmi').value;
+            const glucose = document.getElementById('glucose').value;
+            const bloodPressure = document.getElementById('bloodPressure').value;
+
+            if (!age || !bmi || !glucose || !bloodPressure) {
+                alert('Lütfen tüm kişisel bilgileri doldurunuz!');
+                return;
+            }
+
+            if (selectedSymptoms.length === 0) {
+                alert('Lütfen en az bir semptom seçiniz!');
+                return;
+            }
+
+            // Loading durumu
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Analiz Ediliyor...
+                </div>
+            `;
+
+            try {
+                // API'ye veri gönder
+                const response = await fetch('backend/semptom_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        age: parseInt(age),
+                        bmi: parseFloat(bmi),
+                        glucose: parseInt(glucose),
+                        blood_pressure: parseInt(bloodPressure),
+                        symptoms: selectedSymptoms,
+                        severity: selectedSeverity
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result.data);
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                console.error('Analiz hatası:', error);
+                alert('Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+            } finally {
+                // Button durumunu resetle
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = `
+                    <i class="fas fa-brain"></i>
+                    AI ile Analiz Et
+                `;
+            }
+        });
+
+        // Sonuçları göster
+        function displayResults(data) {
+            const riskScore = document.getElementById('riskScore');
+            const riskLevel = document.getElementById('riskLevel');
+            const riskDescription = document.getElementById('riskDescription');
+            const recommendationsList = document.getElementById('recommendationsList');
+
+            // Risk skorunu göster
+            riskScore.textContent = data.olasillik;
+            
+            // Risk seviyesine göre renk ve metin
+            let riskClass = 'risk-low';
+            if (data.risk_kategorisi.includes('Yüksek')) {
+                riskClass = 'risk-high';
+            } else if (data.risk_kategorisi.includes('Orta')) {
+                riskClass = 'risk-medium';
+            }
+
+            riskLevel.textContent = data.risk_kategorisi;
+            riskLevel.className = `risk-level ${riskClass}`;
+            riskScore.className = `risk-score ${riskClass}`;
+            
+            riskDescription.textContent = data.tahmin;
+
+            // Önerileri listele
+            recommendationsList.innerHTML = '';
+            
+            // Ana öneri
+            const mainRecommendation = document.createElement('div');
+            mainRecommendation.className = 'recommendation-item';
+            mainRecommendation.innerHTML = `
+                <div class="recommendation-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <strong>Genel Değerlendirme:</strong><br>
+                    ${data.oneri}
+                </div>
+            `;
+            recommendationsList.appendChild(mainRecommendation);
+
+            // Detaylı öneriler
+            const recommendations = [
+                {
+                    icon: 'fas fa-utensils',
+                    title: 'Beslenme Önerisi',
+                    text: 'Düşük glisemik indeksli gıdalar tercih edin. Öğünlerinizi küçük ve sık aralıklarla alın.'
+                },
+                {
+                    icon: 'fas fa-running',
+                    title: 'Fiziksel Aktivite',
+                    text: 'Haftada en az 150 dakika orta tempolu egzersiz yapın. Yemeklerden sonra kısa yürüyüşler kan şekerinizi dengelemeye yardımcı olur.'
+                },
+                {
+                    icon: 'fas fa-clock',
+                    title: 'Takip Önerisi',
+                    text: 'Kan şekerinizi düzenli olarak ölçün ve değerlerinizi kaydedin. Ani değişiklikleri doktorunuzla paylaşın.'
+                }
+            ];
+
+            // Her öneriyi ekle
+            recommendations.forEach(rec => {
+                const recItem = document.createElement('div');
+                recItem.className = 'recommendation-item';
+                recItem.innerHTML = `
+                    <div class="recommendation-icon">
+                        <i class="${rec.icon}"></i>
+                    </div>
+                    <div>
+                        <strong>${rec.title}:</strong><br>
+                        ${rec.text}
+                    </div>
+                `;
+                recommendationsList.appendChild(recItem);
+            });
+
+            // Sonuçları göster
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Animasyon gecikmelerini ayarla
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>

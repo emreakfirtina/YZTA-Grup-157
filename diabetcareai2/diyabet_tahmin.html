@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DiabetCare AI - Diyabet Tahmin Sistemi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #b0b0b0;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            transition: background 0.3s ease;
+        }
+
+        .status-indicator.connected {
+            background: #4ecdc4;
+        }
+
+        .main-container {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-header p {
+            color: #b0b0b0;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label i {
+            color: #00d4ff;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .result-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .result-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 1rem;
+        }
+
+        .risk-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .risk-badge {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .risk-low {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+
+        .risk-medium {
+            background: linear-gradient(135deg, #f9ca24 0%, #f0932b 100%);
+            color: white;
+        }
+
+        .risk-high {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .probability-display {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+        }
+
+        .probability-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #00d4ff;
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .recommendations {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .recommendations h3 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .recommendations ul {
+            list-style: none;
+        }
+
+        .recommendations li {
+            padding: 0.5rem 0;
+            color: #b0b0b0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendations li i {
+            color: #00d4ff;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-element {
+            position: absolute;
+            color: rgba(0, 212, 255, 0.05);
+            font-size: 1.5rem;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .floating-element:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 60%; left: 85%; animation-delay: 2s; }
+        .floating-element:nth-child(3) { top: 40%; left: 5%; animation-delay: 4s; }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-container {
+                padding: 1rem;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Arka plan animasyonları -->
+    <div class="floating-elements">
+        <i class="floating-element fas fa-heartbeat"></i>
+        <i class="floating-element fas fa-chart-line"></i>
+        <i class="floating-element fas fa-user-md"></i>
+    </div>
+
+    <!-- Navigasyon -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                DiabetCare AI
+            </div>
+            <div class="connection-status">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <span id="statusText">Bağlantı kontrol ediliyor...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ana içerik -->
+    <div class="main-container">
+        <!-- Başlık -->
+        <div class="form-header">
+            <h1><i class="fas fa-brain"></i> AI Diyabet Risk Analizi</h1>
+            <p>Sağlık verilerinizi girerek yapay zeka ile diyabet risk değerlendirmesi yapabilirsiniz. Tüm bilgiler güvenli bir şekilde işlenir.</p>
+        </div>
+
+        <!-- Hata mesajı -->
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText">Bir hata oluştu</span>
+        </div>
+
+        <!-- Form - DÜZELTME: action ve method kaldırıldı -->
+        <div class="form-container">
+            <form id="diabetForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="Pregnancies">
+                            <i class="fas fa-baby"></i> 
+                            Hamilelik Sayısı
+                        </label>
+                        <input 
+                            type="number" 
+                            id="Pregnancies" 
+                            name="Pregnancies" 
+                            min="0" 
+                            max="20" 
+                            value="0" 
+                            required
+                            placeholder="0-20 arası"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Glucose">
+                            <i class="fas fa-tint"></i> 
+                            Glukoz Seviyesi (mg/dL)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="Glucose" 
+                            name="Glucose" 
+                            step="0.1" 
+                            min="50" 
+                            max="400" 
+                            required
+                            placeholder="Örn: 120"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="BloodPressure">
+                            <i class="fas fa-heartbeat"></i> 
+                            Kan Basıncı (mmHg)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="BloodPressure" 
+                            name="BloodPressure" 
+                            min="40" 
+                            max="200" 
+                            required
+                            placeholder="Örn: 80"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SkinThickness">
+                            <i class="fas fa-ruler"></i> 
+                            Cilt Kalınlığı (mm)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="SkinThickness" 
+                            name="SkinThickness" 
+                            step="0.1" 
+                            min="0" 
+                            max="100" 
+                            required
+                            placeholder="Örn: 25"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Insulin">
+                            <i class="fas fa-syringe"></i> 
+                            İnsülin Seviyesi (mU/L)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="Insulin" 
+                            name="Insulin" 
+                            step="0.1" 
+                            min="0" 
+                            max="1000" 
+                            required
+                            placeholder="Örn: 80"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="BMI">
+                            <i class="fas fa-weight"></i> 
+                            BMI (Vücut Kitle İndeksi)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="BMI" 
+                            name="BMI" 
+                            step="0.1" 
+                            min="10" 
+                            max="60" 
+                            required
+                            placeholder="Örn: 24.5"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="DiabetesPedigreeFunction">
+                            <i class="fas fa-dna"></i> 
+                            Diyabet Aile Geçmişi Skoru
+                        </label>
+                        <input 
+                            type="number" 
+                            id="DiabetesPedigreeFunction" 
+                            name="DiabetesPedigreeFunction" 
+                            step="0.001" 
+                            min="0" 
+                            max="3" 
+                            required
+                            placeholder="Örn: 0.5"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Age">
+                            <i class="fas fa-birthday-cake"></i> 
+                            Yaş
+                        </label>
+                        <input 
+                            type="number" 
+                            id="Age" 
+                            name="Age" 
+                            min="18" 
+                            max="120" 
+                            required
+                            placeholder="Örn: 35"
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-brain"></i> 
+                    AI ile Risk Analizi Yap
+                </button>
+            </form>
+        </div>
+
+        <!-- Sonuç alanı -->
+        <div class="result-container" id="resultContainer">
+            <div class="result-header">
+                <h2>🔬 AI Analiz Sonucu</h2>
+                <div class="risk-indicator">
+                    <div class="risk-badge" id="riskBadge">Hesaplanıyor...</div>
+                </div>
+                <div class="probability-display">
+                    Diyabet Risk Oranı: 
+                    <span class="probability-value" id="probabilityValue">0%</span>
+                </div>
+            </div>
+
+            <div class="recommendations" id="recommendations">
+                <h3><i class="fas fa-lightbulb"></i> AI Önerileri</h3>
+                <ul id="recommendationsList">
+                    <!-- Öneriler JavaScript ile gelecek -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigürasyon
+        const CONFIG = {
+            API_URL: "http://127.0.0.1:8000",
+            ENDPOINTS: {
+                predict: "/predict",
+                health: "/health"
+            }
+        };
+
+        // DOM elemanları
+        const elements = {
+            form: document.getElementById('diabetForm'),
+            submitBtn: document.getElementById('submitBtn'),
+            resultContainer: document.getElementById('resultContainer'),
+            errorMessage: document.getElementById('errorMessage'),
+            errorText: document.getElementById('errorText'),
+            statusIndicator: document.getElementById('statusIndicator'),
+            statusText: document.getElementById('statusText'),
+            riskBadge: document.getElementById('riskBadge'),
+            probabilityValue: document.getElementById('probabilityValue'),
+            recommendationsList: document.getElementById('recommendationsList')
+        };
+
+        // Sayfa yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerStatus();
+            setupFormValidation();
+            setupFormSubmission();
+        });
+
+        // Sunucu durumunu kontrol et
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${CONFIG.API_URL}${CONFIG.ENDPOINTS.health}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.status === 'healthy' && data.model_loaded) {
+                        updateConnectionStatus(true, 'Sistem hazır');
+                    } else {
+                        updateConnectionStatus(false, 'Model yüklü değil');
+                    }
+                } else {
+                    updateConnectionStatus(false, 'API hatası');
+                }
+            } catch (error) {
+                updateConnectionStatus(false, 'Sunucuya bağlanılamıyor');
+                console.error('Server status check failed:', error);
+            }
+        }
+
+        // Bağlantı durumunu güncelle
+        function updateConnectionStatus(isConnected, message) {
+            elements.statusIndicator.classList.toggle('connected', isConnected);
+            elements.statusText.textContent = message;
+            elements.submitBtn.disabled = !isConnected;
+        }
+
+        // Form validasyonu
+        function setupFormValidation() {
+            const inputs = elements.form.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+            });
+        }
+
+        function validateInput(event) {
+            const input = event.target;
+            const value = parseFloat(input.value);
+            
+            // Boş değer kontrolü
+            if (!input.value) {
+                input.setCustomValidity('Bu alan zorunludur');
+                return;
+            }
+            
+            // Sayısal değer kontrolü
+            if (isNaN(value)) {
+                input.setCustomValidity('Lütfen geçerli bir sayı girin');
+                return;
+            }
+            
+            // Alan bazında özel kontroller
+            switch (input.name) {
+                case 'Glucose':
+                    if (value < 50 || value > 400) {
+                        input.setCustomValidity('Glukoz değeri 50-400 arasında olmalıdır');
+                        return;
+                    }
+                    break;
+                case 'BMI':
+                    if (value < 10 || value > 60) {
+                        input.setCustomValidity('BMI değeri 10-60 arasında olmalıdır');
+                        return;
+                    }
+                    break;
+                case 'Age':
+                    if (value < 18 || value > 120) {
+                        input.setCustomValidity('Yaş 18-120 arasında olmalıdır');
+                        return;
+                    }
+                    break;
+            }
+            
+            // Hata yoksa temizle
+            input.setCustomValidity('');
+        }
+
+        // Form gönderimi
+        function setupFormSubmission() {
+            elements.form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                console.log('🚀 Form submit edildi');
+                
+                // Hata mesajını gizle
+                hideError();
+                
+                // Form verilerini topla
+                const formData = new FormData(elements.form);
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    data[key] = parseFloat(value);
+                }
+                
+                console.log('📊 Form verileri:', data);
+                
+                // Buton durumunu değiştir
+                setSubmitButtonLoading(true);
+                
+                try {
+                    console.log('🌐 API çağrısı yapılıyor...');
+                    const response = await fetch(`${CONFIG.API_URL}${CONFIG.ENDPOINTS.predict}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    console.log('✅ API Response:', result);
+                    
+                    if (response.ok && result.success) {
+                        displayResults(result);
+                    } else {
+                        showError(result.error || 'Beklenmeyen bir hata oluştu');
+                    }
+                    
+                } catch (error) {
+                    console.error('❌ Request failed:', error);
+                    showError('Sunucuya bağlanılamıyor. Lütfen FastAPI sunucusunun çalıştığından emin olun.');
+                } finally {
+                    setSubmitButtonLoading(false);
+                }
+            });
+        }
+
+        // Sonuçları göster
+        function displayResults(result) {
+            console.log('📋 Sonuçlar gösteriliyor:', result);
+            
+            // Risk seviyesini belirle ve badge'i güncelle
+            const riskTexts = {
+                'low': 'Düşük Risk',
+                'medium': 'Orta Risk', 
+                'high': 'Yüksek Risk'
+            };
+            
+            elements.riskBadge.textContent = riskTexts[result.risk_level] || 'Bilinmiyor';
+            elements.riskBadge.className = `risk-badge risk-${result.risk_level}`;
+            
+            // Yüzdelik değeri göster
+            elements.probabilityValue.textContent = `${result.percentage || (result.probability * 100).toFixed(2)}%`;
+            
+            // Öneriler
+            displayRecommendations(result.risk_level, result.percentage || (result.probability * 100));
+            
+            // Sonuç containerını göster
+            elements.resultContainer.classList.add('show');
+            elements.resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Öneriler
+        function displayRecommendations(riskLevel, percentage) {
+            const recommendations = {
+                'low': [
+                    'Mevcut yaşam tarzınızı sürdürün',
+                    'Düzenli egzersiz yapmaya devam edin',
+                    'Sağlıklı beslenme alışkanlıklarınızı koruyun',
+                    'Yılda bir kez sağlık kontrolü yaptırın'
+                ],
+                'medium': [
+                    'Doktorunuzla görüşerek detaylı tetkik yaptırın',
+                    'Beslenme uzmanından yardım alın',
+                    'Düzenli egzersez programı başlatın',
+                    '3-6 ayda bir kontrol yaptırın',
+                    'Stresi azaltmaya odaklanın'
+                ],
+                'high': [
+                    'Acilen bir doktora başvurun',
+                    'Kan şekeri ve HbA1c testleri yaptırın',
+                    'Endokrinoloji uzmanından randevu alın',
+                    'Beslenme programını gözden geçirin',
+                    'Düzenli takip ve kontrolleri ihmal etmeyin'
+                ]
+            };
+            
+            const riskRecommendations = recommendations[riskLevel] || [];
+            elements.recommendationsList.innerHTML = '';
+            
+            riskRecommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="fas fa-check-circle"></i> ${rec}`;
+                elements.recommendationsList.appendChild(li);
+            });
+        }
+
+        // Hata göster
+        function showError(message) {
+            elements.errorText.textContent = message;
+            elements.errorMessage.classList.add('show');
+            elements.errorMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hata gizle
+        function hideError() {
+            elements.errorMessage.classList.remove('show');
+        }
+
+        // Buton durumu
+        function setSubmitButtonLoading(isLoading) {
+            if (isLoading) {
+                elements.submitBtn.disabled = true;
+                elements.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analiz Ediliyor...';
+            } else {
+                elements.submitBtn.disabled = false;
+                elements.submitBtn.innerHTML = '<i class="fas fa-brain"></i> AI ile Risk Analizi Yap';
+                
+                // Bağlantı durumunu tekrar kontrol et
+                checkServerStatus();
+            }
+        }
+
+        // Periyodik sunucu durumu kontrolü
+        setInterval(checkServerStatus, 30000); // 30 saniyede bir
+    </script>
+</body>
+</html>

@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Beslenme Kaydı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 3rem;
+            padding: 0 1rem;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            margin: 0.2rem 0;
+        }
+
+        .sidebar a:hover {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a.active {
+            color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+            border-left-color: #00d4ff;
+        }
+
+        .sidebar a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Nutrition Form */
+        .nutrition-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-container, .analysis-container {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-container:hover, .analysis-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Analysis Results */
+        .analysis-results {
+            display: none;
+        }
+
+        .analysis-results.show {
+            display: block;
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .prediction-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .risk-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .risk-success { background: rgba(78, 205, 196, 0.2); color: #4ecdc4; }
+        .risk-warning { background: rgba(249, 202, 36, 0.2); color: #f9ca24; }
+        .risk-danger { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+
+        .food-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .detail-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.2rem;
+        }
+
+        /* Recommendations */
+        .recommendations {
+            margin-top: 1.5rem;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .recommendation-item.success {
+            border-left: 4px solid #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .recommendation-item.warning {
+            border-left: 4px solid #f9ca24;
+            background: rgba(249, 202, 36, 0.1);
+        }
+
+        .recommendation-item.danger {
+            border-left: 4px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .recommendation-item.info {
+            border-left: 4px solid #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .recommendation-icon {
+            font-size: 1.2rem;
+            margin-top: 0.2rem;
+        }
+
+        .save-meal-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .save-meal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .nutrition-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+            
+            .food-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            DiabetCare <span style="color: #00d4ff;">AI</span>
+        </div>
+        
+        <a href="home.php">
+            <i class="fas fa-home"></i>
+            Ana Sayfa
+        </a>
+        <a href="diyabet_tahmin.html">
+            <i class="fas fa-tint"></i>
+            Diyabet Tahmini
+        </a>
+        <a href="beslenme_modul.html" class="active">
+            <i class="fas fa-utensils"></i>
+            Beslenme Kaydı
+        </a>
+        <a href="aktivite_modul.html">
+            <i class="fas fa-running"></i>
+            Aktivite Kaydı
+        </a>
+        <a href="chatbot.html">
+            <i class="fas fa-brain"></i>
+            Chatbot
+        </a>
+        <a href="semptom_modul.html">
+            <i class="fas fa-chart-line"></i>
+            Semptom Analizi
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header fade-in">
+            <div class="page-title">
+                <h1>Beslenme Kaydı</h1>
+                <p>AI destekli beslenme analizi ve önerileri</p>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Ana Sayfa
+            </a>
+        </div>
+
+        <div class="nutrition-section fade-in">
+            <!-- Gıda Seçim Formu -->
+            <div class="form-container">
+                <div class="section-title">
+                    <i class="fas fa-utensils"></i>
+                    Gıda Seçimi ve Analizi
+                </div>
+                
+                <form id="nutritionForm">
+                    <div class="form-group">
+                        <label for="mealType">Öğün Türü</label>
+                        <select id="mealType" name="mealType" required>
+                            <option value="">Öğün türünü seçin</option>
+                            <option value="Kahvaltı">Kahvaltı</option>
+                            <option value="Ara Öğün">Ara Öğün</option>
+                            <option value="Öğle Yemeği">Öğle Yemeği</option>
+                            <option value="İkindi">İkindi</option>
+                            <option value="Akşam Yemeği">Akşam Yemeği</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="foodSelect">Gıda Seçimi</label>
+                        <select id="foodSelect" name="foodSelect" required>
+                            <option value="">Gıda seçin</option>
+                            <option value="beyaz_ekmek">Beyaz Ekmek (1 dilim)</option>
+                            <option value="tam_bugday_ekmek">Tam Buğday Ekmek (1 dilim)</option>
+                            <option value="pirinc">Beyaz Pirinç (1 porsiyon)</option>
+                            <option value="kahverengi_pirinc">Kahverengi Pirinç (1 porsiyon)</option>
+                            <option value="elma">Elma (1 adet)</option>
+                            <option value="muz">Muz (1 adet)</option>
+                            <option value="tavuk_gogus">Tavuk Göğsü (100g)</option>
+                            <option value="yogurt">Yoğurt (1 kase)</option>
+                            <option value="makarna">Makarna (1 porsiyon)</option>
+                            <option value="badem">Badem (1 avuç)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Miktar (Porsiyon)</label>
+                        <input type="number" id="quantity" name="quantity" min="0.5" max="5" step="0.5" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientAge">Yaş</label>
+                        <input type="number" id="patientAge" name="patientAge" min="18" max="100" value="45" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientBmi">BMI</label>
+                        <input type="number" id="patientBmi" name="patientBmi" min="15" max="45" step="0.1" value="25.0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="diabetesType">Diyabet Tipi</label>
+                        <select id="diabetesType" name="diabetesType" required>
+                            <option value="Tip 1">Tip 1</option>
+                            <option value="Tip 2" selected>Tip 2</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hba1c">HbA1c (%)</label>
+                        <input type="number" id="hba1c" name="hba1c" min="4" max="15" step="0.1" value="7.2" required>
+                    </div>
+
+                    <button type="submit" class="analyze-btn" id="analyzeBtn">
+                        <i class="fas fa-chart-line"></i>
+                        Analiz Et
+                    </button>
+                </form>
+            </div>
+
+            <!-- Analiz Sonuçları -->
+            <div class="analysis-container">
+                <div class="section-title">
+                    <i class="fas fa-brain"></i>
+                    AI Analiz Sonuçları
+                </div>
+
+                <div id="analysisResults" class="analysis-results">
+                    <!-- Kan Şekeri Tahmini -->
+                    <div class="prediction-card">
+                        <div class="prediction-header">
+                            <div>
+                                <h3>Kan Şekeri Etkisi</h3>
+                                <div class="prediction-value" id="bloodSugarPrediction">-</div>
+                                <small>mg/dL artış bekleniyor</small>
+                            </div>
+                            <div class="risk-badge" id="riskBadge">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Besin Değerleri -->
+                    <div class="food-details" id="foodDetails">
+                        <!-- JavaScript ile doldurulacak -->
+                    </div>
+
+                    <!-- AI Önerileri -->
+                    <div class="recommendations">
+                        <h4 style="margin-bottom: 1rem; color: #00d4ff;">
+                            <i class="fas fa-lightbulb"></i>
+                            AI Önerileri
+                        </h4>
+                        <div id="recommendationsList">
+                            <!-- JavaScript ile doldurulacak -->
+                        </div>
+                    </div>
+
+                    <!-- Kaydet Butonu -->
+                    <button class="save-meal-btn" id="saveMealBtn" style="display: none;">
+                        <i class="fas fa-save"></i>
+                        Öğünü Kaydet
+                    </button>
+                </div>
+
+                <!-- Başlangıç Mesajı -->
+                <div id="initialMessage" class="prediction-card">
+                    <div style="text-align: center; color: rgba(255, 255, 255, 0.6);">
+                        <i class="fas fa-info-circle" style="font-size: 3rem; margin-bottom: 1rem; color: #00d4ff;"></i>
+                        <h3>Gıda Analizi Bekleniyor</h3>
+                        <p>Soldaki formu doldurarak gıdanızın kan şekeri üzerindeki etkisini analiz edin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Günlük Beslenme Özeti -->
+        <div class="nutrition-summary fade-in" style="margin-top: 2rem;">
+            <div class="form-container">
+                <div class="section-title">
+                    <i class="fas fa-calendar-day"></i>
+                    Bugünkü Beslenme Özeti
+                </div>
+                
+                <div class="food-details">
+                    <div class="detail-item">
+                        <div class="detail-value">1,450</div>
+                        <div class="detail-label">Toplam Kalori</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value">180g</div>
+                        <div class="detail-label">Karbohidrat</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value">75g</div>
+                        <div class="detail-label">Protein</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value">45g</div>
+                        <div class="detail-label">Yağ</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value">25g</div>
+                        <div class="detail-label">Lif</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-value">65g</div>
+                        <div class="detail-label">Şeker</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 212, 255, 0.1); border-radius: 10px; border-left: 4px solid #00d4ff;">
+                    <strong>💡 Günlük Öneri:</strong> Hedef kalorinizin %80'ine ulaştınız. Akşam yemeğinde hafif bir protein ve sebze tercih edebilirsiniz.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = 'http://127.0.0.1:5000/api';
+
+        // Form elementi
+        const nutritionForm = document.getElementById('nutritionForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const analysisResults = document.getElementById('analysisResults');
+        const initialMessage = document.getElementById('initialMessage');
+        const saveMealBtn = document.getElementById('saveMealBtn');
+
+        // Form submit event
+        nutritionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Button loading state
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<div class="loading"></div> Analiz Ediliyor...';
+            
+            // Form verilerini al
+            const formData = new FormData(nutritionForm);
+            const data = {
+                food_id: formData.get('foodSelect'),
+                meal_type: formData.get('mealType'),
+                quantity: parseFloat(formData.get('quantity')),
+                age: parseInt(formData.get('patientAge')),
+                bmi: parseFloat(formData.get('patientBmi')),
+                diabetes_type: formData.get('diabetesType'),
+                hba1c: parseFloat(formData.get('hba1c'))
+            };
+
+            try {
+                // API çağrısı
+                const response = await fetch(`${API_BASE}/analyze_food`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayAnalysisResults(result);
+                } else {
+                    showError(result.message || 'Analiz sırasında bir hata oluştu.');
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                showError('Bağlantı hatası. Backend sunucusunun çalıştığından emin olun.');
+            } finally {
+                // Button normal state
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-chart-line"></i> Analiz Et';
+            }
+        });
+
+        // Analiz sonuçlarını göster
+        function displayAnalysisResults(result) {
+            const { food_info, predictions, recommendations } = result;
+
+            // Mesajları gizle/göster
+            initialMessage.style.display = 'none';
+            analysisResults.classList.add('show');
+            saveMealBtn.style.display = 'block';
+
+            // Kan şekeri tahmini
+            document.getElementById('bloodSugarPrediction').textContent = predictions.blood_sugar_increase;
+            
+            // Risk badge
+            const riskBadge = document.getElementById('riskBadge');
+            riskBadge.textContent = predictions.risk_level;
+            riskBadge.className = `risk-badge risk-${predictions.risk_color}`;
+
+            // Besin değerleri
+            const foodDetails = document.getElementById('foodDetails');
+            foodDetails.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.kalori}</div>
+                    <div class="detail-label">Kalori</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.karbohidrat}g</div>
+                    <div class="detail-label">Karbohidrat</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.protein}g</div>
+                    <div class="detail-label">Protein</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.yag}g</div>
+                    <div class="detail-label">Yağ</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.lif}g</div>
+                    <div class="detail-label">Lif</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.seker}g</div>
+                    <div class="detail-label">Şeker</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-value">${food_info.glisemik_indeks}</div>
+                    <div class="detail-label">Glisemik İndeks</div>
+                </div>
+            `;
+
+            // Öneriler
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = recommendations.map(rec => `
+                <div class="recommendation-item ${rec.type}">
+                    <div class="recommendation-icon">
+                        <i class="${rec.icon}"></i>
+                    </div>
+                    <div>${rec.message}</div>
+                </div>
+            `).join('');
+        }
+
+        // Hata mesajı göster
+        function showError(message) {
+            initialMessage.innerHTML = `
+                <div style="text-align: center; color: #ff6b6b;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h3>Hata</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+            analysisResults.classList.remove('show');
+            saveMealBtn.style.display = 'none';
+        }
+
+        // Öğün kaydet
+        saveMealBtn.addEventListener('click', async () => {
+            const formData = new FormData(nutritionForm);
+            const mealData = {
+                food_id: formData.get('foodSelect'),
+                meal_type: formData.get('mealType'),
+                quantity: parseFloat(formData.get('quantity')),
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/save_meal`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(mealData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Başarı mesajı
+                    saveMealBtn.innerHTML = '<i class="fas fa-check"></i> Kaydedildi!';
+                    saveMealBtn.style.background = 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)';
+                    
+                    setTimeout(() => {
+                        saveMealBtn.innerHTML = '<i class="fas fa-save"></i> Öğünü Kaydet';
+                        saveMealBtn.style.background = 'linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%)';
+                    }, 2000);
+                } else {
+                    alert('Kayıt sırasında bir hata oluştu: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Save Error:', error);
+                alert('Kayıt sırasında bağlantı hatası oluştu.');
+            }
+        });
+
+        // Animasyon gecikmelerini ayarla
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Form validation feedback
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('change', () => {
+                if (input.checkValidity()) {
+                    input.style.borderColor = 'rgba(78, 205, 196, 0.5)';
+                } else {
+                    input.style.borderColor = 'rgba(255, 107, 107, 0.5)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

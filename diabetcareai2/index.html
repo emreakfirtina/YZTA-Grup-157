@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetCare AI - Yapay Zeka Destekli Diyabet Yönetim Asistanı</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0a0a0a;
+        color: #ffffff;
+        overflow-x: hidden;
+        line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 1000;
+        padding: 1rem 0;
+        transition: all 0.3s ease;
+    }
+
+    .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 2rem;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #00d4ff;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .logo i {
+        animation: heartbeat 2s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    /* Hero Section - Amatis tarzı */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.08) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    .hero-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-text {
+        max-width: 600px;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+        color: #00d4ff;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 500;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 2rem;
+        line-height: 1.1;
+    }
+
+    .hero-title .highlight {
+        color: #00d4ff;
+        display: block;
+        margin-top: 0.5rem;
+    }
+
+    .hero-description {
+        font-size: 1.2rem;
+        color: #b0b0b0;
+        margin-bottom: 3rem;
+        line-height: 1.6;
+    }
+
+    .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    .device-mockup {
+        width: 400px;
+        height: 300px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+    }
+
+    .device-mockup::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.5" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+        opacity: 0.3;
+    }
+
+    .device-content {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .device-icon {
+        font-size: 4rem;
+        color: #00d4ff;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+        color: #ffffff;
+        text-decoration: none;
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .cta-button:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+    }
+
+    /* Highlighted Experiences Section - Amatis tarzı */
+    .experiences {
+        padding: 6rem 0;
+        background: #0f0f0f;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-label {
+        font-size: 1rem;
+        color: #00d4ff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .experiences-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .experience-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        position: relative;
+    }
+
+    .experience-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(0, 212, 255, 0.2);
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.1);
+    }
+
+    .experience-image {
+        height: 200px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .experience-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%2300d4ff" opacity="0.3"/><circle cx="80" cy="40" r="1.5" fill="%23ff6b6b" opacity="0.3"/><circle cx="40" cy="80" r="1" fill="%2300d4ff" opacity="0.3"/></svg>');
+    }
+
+    .experience-icon {
+        font-size: 3rem;
+        color: #00d4ff;
+        position: relative;
+        z-index: 2;
+    }
+
+    .experience-content {
+        padding: 2rem;
+    }
+
+    .experience-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #ffffff;
+    }
+
+    .experience-description {
+        color: #b0b0b0;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+
+    /* Why Choose Section - Amatis tarzı */
+    .why-choose {
+        padding: 6rem 0;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    }
+
+    .why-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+
+    .why-text h2 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700;
+        margin-bottom: 2rem;
+        line-height: 1.2;
+    }
+
+    .why-description {
+        font-size: 1.1rem;
+        color: #b0b0b0;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .why-features {
+        list-style: none;
+        padding: 0;
+    }
+
+    .why-features li {
+        padding: 0.5rem 0;
+        color: #ffffff;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .why-features li::before {
+        content: '•';
+        color: #00d4ff;
+        font-size: 1.2rem;
+        position: absolute;
+        left: 0;
+    }
+
+    .highlighted-product {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .highlighted-product::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(255, 107, 107, 0.05) 100%);
+    }
+
+    .product-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .product-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #ffffff;
+    }
+
+    .product-subtitle {
+        color: #b0b0b0;
+        margin-bottom: 2rem;
+    }
+
+    .product-visual {
+        width: 200px;
+        height: 150px;
+        background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-radius: 15px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .product-visual i {
+        font-size: 3rem;
+        color: #00d4ff;
+    }
+
+    /* Floating Elements */
+    .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .floating-element {
+        position: absolute;
+        font-size: 2rem;
+        animation: float-slow 12s ease-in-out infinite;
+        opacity: 0.03;
+    }
+
+    @keyframes float-slow {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(180deg); }
+    }
+
+    .floating-element:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; color: #00d4ff; }
+    .floating-element:nth-child(2) { top: 60%; left: 85%; animation-delay: 3s; color: #ff6b6b; }
+    .floating-element:nth-child(3) { top: 40%; left: 5%; animation-delay: 6s; color: #4ecdc4; }
+    .floating-element:nth-child(4) { top: 80%; left: 75%; animation-delay: 1s; color: #f9ca24; }
+    .floating-element:nth-child(5) { top: 30%; left: 90%; animation-delay: 4s; color: #00d4ff; }
+    .floating-element:nth-child(6) { top: 70%; left: 15%; animation-delay: 7s; color: #ff6b6b; }
+
+    /* Animations */
+    .fade-in {
+        opacity: 0;
+        animation: fadeInUp 1s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s ease;
+    }
+
+    .scroll-reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            text-align: center;
+        }
+
+        .hero-visual {
+            order: -1;
+        }
+
+        .device-mockup {
+            width: 300px;
+            height: 220px;
+        }
+
+        .why-content {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-container {
+            padding: 0 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+        }
+
+        .hero-content,
+        .container {
+            padding: 0 1rem;
+        }
+
+        .experiences-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .device-mockup {
+            width: 280px;
+            height: 200px;
+        }
+
+        .highlighted-product {
+            padding: 2rem;
+        }
+    }
+</style>
+
+<body>
+    <div class="floating-elements">
+        <div class="floating-element"><i class="fas fa-heartbeat"></i></div>
+        <div class="floating-element"><i class="fas fa-brain"></i></div>
+        <div class="floating-element"><i class="fas fa-chart-line"></i></div>
+        <div class="floating-element"><i class="fas fa-user-md"></i></div>
+        <div class="floating-element"><i class="fas fa-mobile-alt"></i></div>
+        <div class="floating-element"><i class="fas fa-shield-alt"></i></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                Diabet<b style="color: #00d4ff;">Care AI</b>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <p class="hero-subtitle fade-in">Yapay Zeka Destekli Sağlık</p>
+                <h1 class="hero-title fade-in">
+                    Diyabet Yönetiminde
+                    <span class="highlight">Akıllı Çözüm.</span>
+                </h1>
+                <p class="hero-description fade-in">
+                    Kişiselleştirilmiş AI algoritmaları ile kan şekeri tahminleri, 
+                    beslenme analizi ve kapsamlı sağlık takibi yapın.
+                </p>
+                <a href="hasta_giris.php" class="cta-button fade-in">
+                    <i class="fas fa-user"></i>
+                    Hasta Girişi
+                </a>
+            </div>
+            <div class="hero-visual fade-in">
+                <div class="device-mockup">
+                    <div class="device-content">
+                        <i class="fas fa-brain device-icon"></i>
+                        <p style="color: #b0b0b0; font-size: 0.9rem;">AI Powered Health</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlighted Experiences Section -->
+    <section class="experiences">
+        <div class="container">
+            <div class="section-header scroll-reveal">
+                <p class="section-label">Öne Çıkan</p>
+                <h2 class="section-title">Özellikler</h2>
+            </div>
+            
+            <div class="experiences-grid">
+                <div class="experience-card scroll-reveal">
+                    <div class="experience-image">
+                        <i class="fas fa-brain experience-icon"></i>
+                    </div>
+                    <div class="experience-content">
+                        <h3 class="experience-title">Yapay Zeka<br>Tahminleri</h3>
+                        <p class="experience-description">
+                            Gelişmiş makine öğrenmesi ile kan şekeri seviyelerinizi önceden tahmin edin.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="experience-card scroll-reveal">
+                    <div class="experience-image">
+                        <i class="fas fa-utensils experience-icon"></i>
+                    </div>
+                    <div class="experience-content">
+                        <h3 class="experience-title">Akıllı<br>Beslenme</h3>
+                        <p class="experience-description">
+                            Tükettiğiniz gıdaların kan şekerinize etkisini analiz eden AI sistemi.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="experience-card scroll-reveal">
+                    <div class="experience-image">
+                        <i class="fas fa-running experience-icon"></i>
+                    </div>
+                    <div class="experience-content">
+                        <h3 class="experience-title">Aktivite<br>Önerileri</h3>
+                        <p class="experience-description">
+                            Sağlık verilerinize göre kişiselleştirilmiş egzersiz programları.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="experience-card scroll-reveal">
+                    <div class="experience-image">
+                        <i class="fas fa-robot experience-icon"></i>
+                    </div>
+                    <div class="experience-content">
+                        <h3 class="experience-title">AI<br>Chatbot</h3>
+                        <p class="experience-description">
+                            24/7 diyabet yönetimi konusunda anında destek ve rehberlik.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Section -->
+    <section class="why-choose">
+        <div class="container">
+            <div class="why-content">
+                <div class="why-text scroll-reveal">
+                    <h2>
+                        Neden DiabetCare AI<br>
+                        <span style="color: #00d4ff;">tercih edilir?</span>
+                    </h2>
+                    <p class="why-description">
+                        DiabetCare AI, modern teknoloji ile diyabet yönetiminde 
+                        yenilikçi çözümler sunarak hayat kalitenizi artırır.
+                    </p>
+                    <ul class="why-features">
+                        <li>Kişiselleştirilmiş AI algoritmaları</li>
+                        <li>7/24 sağlık takibi ve analizi</li>
+                        <li>Kapsamlı beslenme ve aktivite rehberi</li>
+                        <li>Güvenli veri koruması</li>
+                        <li>Kullanıcı dostu arayüz</li>
+                        <li>Sürekli öğrenen AI sistemi</li>
+                    </ul>
+                </div>
+                
+                <div class="highlighted-product scroll-reveal">
+                    <div class="product-content">
+                        <h3 class="product-title">İzle, analiz et ve harekete geç.</h3>
+                        <p class="product-subtitle">tek bir yerde.</p>
+                        <div class="product-visual">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(10, 10, 10, 0.98)';
+                header.style.borderBottom = '1px solid rgba(0, 212, 255, 0.2)';
+            } else {
+                header.style.background = 'rgba(10, 10, 10, 0.95)';
+                header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+            }
+        });
+
+        // Animation delays for initial elements
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.2}s`;
+            });
+        });
+
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
