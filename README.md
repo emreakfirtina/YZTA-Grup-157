@@ -140,6 +140,47 @@ Sprint 2 değerlendirme toplantısında, ekip üyeleri proje yol haritasına uyg
 
 - Görev takibi için Asana kullanımında standartlar belirlenmiş ve daha net zamanlama yapılmasına karar verilmiştir.
 
+## Sprint 3 : Ürün Teslimi
+Sprint içinde tamamlanması tahmin edilen puan: 120 Puan
+**Puan tamamlama mantığı:**
+Projenin toplam 340 puanlık backlog’u, üç sprint’e dengeli şekilde bölünmüştür. Bu kapsamda Sprint 3’e yaklaşık 120 puanlık görev atanmıştır. Bu sprintte, kullanıcı arayüzü ve temel sistem bileşenlerinin üzerine yapay zekâ modülünün entegrasyonu, chatbot’un tamamlanması, son testler ve proje sunumuna hazırlık gibi teslim odaklı görevler önceliklendirilmiştir.
+
+**Sprint Board**
+![Ekran Görüntüsü](C:/Users/90530/Desktop/1.png)
+
+**Daily Scrum**
+
+Daily Scrum toplantılarının zamansal nedenlerle Whatsapp grubu üzerinden yapılmasına karar verilmiştir. 
+
+![Ekran Görüntüs](C:/Users/90530/Desktop/2.jpeg)
+
+**Sprint süresince tamamlanan görevler**
+Chatbot geliştirmesi ve entegrasyonu:
+Önceki sprintte teknik gereksinimleri planlanan chatbot modülü, bu sprintte tamamlanarak sisteme entegre edilmiştir. Kullanıcılarla etkileşim kurabilen ve temel soruları yanıtlayabilen bir yapay zekâ asistanı oluşturulmuştur. Hasta tarafında kullanılacak şekilde diyabet hakkında bilgilendirme, yönlendirme ve sistem içi destek sağlayacak temel akışlar başarıyla kodlanmıştır.
+
+Son kullanıcı testleri:
+Hasta kullanıcıları için tanımlanmış tüm senaryolar demo kullanıcılar üzerinden test edilmiştir. Sistemin veri akışı, giriş/kayıt işlemleri, rol geçişleri ve chatbot etkileşimleri dahil olmak üzere uçtan uca testler başarıyla tamamlanmıştır.
+
+Sistem iyileştirmeleri ve hata düzeltmeleri:
+Önceki sprintlerde belirlenen küçük hatalar ve kullanıcı deneyimi açısından yapılması gereken düzeltmeler bu sprintte giderilmiştir. Sayfa geçişleri optimize edilmiş, hata mesajları düzenlenmiş ve genel performans iyileştirmeleri yapılmıştır.
+
+**Ürün Durumu**
+https://www.youtube.com/watch?v=28VevEW_lmk
+
+**Sprint Review**
+
+Sprint 3 sonunda, yapay zekâ tabanlı diyabet destek sisteminin tüm ana bileşenleri tamamlanmış ve sistem teslim edilebilir bir duruma getirilmiştir. Bu sprint boyunca chatbot modülü başarıyla geliştirilmiş ve hasta arayüzüyle entegre edilmiştir. Kullanıcılar artık sistem içinde doğal dilde soru sorarak destek alabilmekte ve yönlendirilerek daha interaktif bir deneyim yaşamaktadır.
+
+Tamamlanan uçtan uca testler ile sistemin genel işlevselliği doğrulanmış; demo kullanıcı verileriyle yapılan senaryolar sayesinde sistemin güvenilirliği ve kullanıcı dostu yapısı gösterilmiştir. Web arayüzü, veritabanı bağlantısı, kullanıcı rolleri, chatbot ve diğer tüm temel modüller senkronize çalışır duruma getirilmiştir.
+
+**Sprint Retrospective**
+Chatbot gibi kapsamlı modüllerin önceki sprintlerde temellendirilmesi, son sprintte odaklı çalışma imkânı sağlamıştır.
+
+Tüm ekibin teslim sürecine odaklanması, planlı ve zamanında bitirme açısından etkili olmuştur.
+
+İletişim verimliliği korunmuş, özellikle test süreçlerinde ekip içi hızlı geri bildirim döngüsü başarıyla uygulanmıştır.
+
+Teknik dökümantasyonun proje başından itibaren tutulması, teslim sürecinde zaman kazandırmıştır.
 
 
 
